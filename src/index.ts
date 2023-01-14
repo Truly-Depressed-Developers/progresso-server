@@ -73,18 +73,6 @@ app.post("/login", async (req: Request<{}, {}, { username: string, password: str
     });
 })
 
-app.post("/title", async (req: Request<{}, {}, { username: string, title: string }>, res) => {
-    const result = await database.setTitle(
-        req.body.username,
-        req.body.title,
-    )
-
-    if (result.success === false) {
-        return res.status(400).send({ description: "Set title error" });
-    }
-
-    return res.status(200).send({ description: "Set title successful" });
-})
 
 app.post("/getData", async (req: Request<{}, {}, { id: string }>, res) => {
     // Single data
@@ -110,34 +98,6 @@ app.post("/getData", async (req: Request<{}, {}, { id: string }>, res) => {
             skills: resultSkills.data,
             achievements: resultAchievements.data
         }
-    });
-})
-
-app.post("/bio", async (req: Request<{}, {}, { id: string, bio: string }>, res) => {
-    const result = await database.setBio(
-        req.body.id,
-        req.body.bio,
-    )
-
-    if (result.success === false || result.data.length !== 1) {
-        return res.status(400).send({ description: "Set bio error" });
-    }
-
-    return res.status(200).send({ description: "Set bio successful" });
-})
-
-app.post("/getBio", async (req: Request<{}, {}, { id: string }>, res) => {
-    const result = await database.getBio(
-        req.body.id
-    )
-
-    if (result.success === false) {
-        return res.status(400).send({ description: "Get bio error" });
-    }
-
-    return res.status(200).send({
-        description: "Get bio successful",
-        title: result.data[0].bio
     });
 })
 
