@@ -23,7 +23,7 @@ app.get("/", (_, res) => {
     res.send("Hello world!");
 })
 
-app.post("/fileUpload", (req, res) => {
+app.post("/file", (req, res) => {
     const form = new formidable.IncomingForm();
     // console.log(form);
 
@@ -36,7 +36,6 @@ app.post("/fileUpload", (req, res) => {
     form.on('file', function (name, file) {
         console.log('Uploaded ' + file.filepath);
     });
-
 })
 
 app.listen(3000, () => {
