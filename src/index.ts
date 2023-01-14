@@ -5,6 +5,7 @@ import Database from "./Database";
 import path from "path";
 import formidable from 'formidable';
 import { v4 as uuidv4 } from 'uuid';
+import sha256, { Hash, HMAC } from "fast-sha256";
 var nacl = require('tweetnacl');
 nacl.util = require('tweetnacl-util');
 
@@ -18,6 +19,7 @@ app.use(cors({
     origin: "*",
     credentials: true,
 }))
+app.use("/static", Express.static('public'));
 
 
 const database = new Database();
