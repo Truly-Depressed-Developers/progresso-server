@@ -46,7 +46,7 @@ app.post("/register", async (req: Request<{}, {}, { username: string, password: 
         req.body.username,
         stringPasswd,
     )
-    if (registerResult.success === false || registerResult.data.length !== 1) {
+    if (registerResult.success === false) {
         return res.status(400).send({ description: "Registration error occured" });
     }
 
@@ -79,7 +79,7 @@ app.post("/title", async (req: Request<{}, {}, { username: string, title: string
         req.body.title,
     )
 
-    if (result.success === false || result.data.length !== 1) {
+    if (result.success === false) {
         return res.status(400).send({ description: "Set title error" });
     }
 
