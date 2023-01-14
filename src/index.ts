@@ -74,10 +74,11 @@ app.post("/login", async (req: Request<{}, {}, { username: string, password: str
 })
 
 
-app.post("/getData", async (req: Request<{}, {}, { id: string }>, res) => {
+app.post("/getUserData", async (req: Request<{}, {}, { id: string }>, res) => {
     // Single data
     const resultSingle = await database.getSingleData(req.body.id)
     if (resultSingle.success === false || resultSingle.data.length !== 1) {
+        console.log(resultSingle)
         return res.status(400).send({ description: "Get single data error" });
     }
     // Skills
