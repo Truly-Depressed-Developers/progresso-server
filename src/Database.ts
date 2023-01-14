@@ -68,6 +68,21 @@ export default class Database {
         return await this.query<{ id: string }>(sql, [username, password]);
     }
 
+    async getSingleData(id: string) {
+        const single_sql = `SELECT u.username, t.title, u.bio, f.originalName, f.extension FROM users AS u JOIN titles AS t ON u.title = t.id JOIN files AS f ON u.profile_photo_id = f.id WHERE u.id = ${id}`
+        return await this.query<{ data: string }>(single_sql, [id]);
+    }
+
+    async getSkills(id: string) {
+        const skills = `SELECT s.id, s.name, u.points FROM user_skills AS u JOIN skills AS s ON u.skill_id = s.id WHERE u.user_id = ${id}`
+        return await this.query<{ skills: string }>(skills, [id]);
+    }
+
+    async getAchievements(id: string) {
+        const achievements = `SELECT a.id, a.name, a.description, a.photo_url FROM user_achievements AS u JOIN achievements AS a ON u.achievement_id = a.id WHERE u.user_id = ${id}`
+        return await this.query<{ achievements: string }>(achievements, [id]);
+    }
+
     // Title
     async getTitle(id: string) {
         const sql = "SELECT tile FROM users WHERE id=?"

@@ -86,18 +86,30 @@ app.post("/title", async (req: Request<{}, {}, { username: string, title: string
     return res.status(200).send({ description: "Set title successful" });
 })
 
-app.post("/getTitle", async (req: Request<{}, {}, { id: string }>, res) => {
-    const result = await database.getTitle(
-        req.body.id
-    )
-
-    if (result.success === false || result.data.length !== 1) {
-        return res.status(400).send({ description: "Get title error" });
+app.post("/getData", async (req: Request<{}, {}, { id: string }>, res) => {
+    // Single data
+    const resultSingle = await database.getSingleData(req.body.id)
+    if (resultSingle.success === false || resultSingle.data.length !== 1) {
+        return res.status(400).send({ description: "Get single data error" });
+    }
+    // Skills
+    const resultSkills = await database.getSkills(req.body.id)
+    if (resultSkills.success === false) {
+        return res.status(400).send({ description: "Get skills data error" });
+    }
+    // Achievements
+    const resultAchievements = await database.getAchievements(req.body.id)
+    if (resultAchievements.success === false) {
+        return res.status(400).send({ description: "Get achievements data error" });
     }
 
     return res.status(200).send({
-        description: "Get title successful",
-        title: result.data[0].title
+        description: "Get data successful",
+        data: {
+            single: resultSingle.data,
+            skills: resultSkills.data,
+            achievements: resultAchievements.data
+        }
     });
 })
 
