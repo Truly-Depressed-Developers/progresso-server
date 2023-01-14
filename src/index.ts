@@ -69,7 +69,8 @@ app.post("/login", async (req: Request<{}, {}, { username: string, password: str
 
     return res.status(200).send({
         description: "Successful login",
-        id: result.data[0].id
+        id: result.data[0].id,
+        username: req.body.username
     });
 })
 
