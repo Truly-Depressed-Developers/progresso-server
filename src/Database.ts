@@ -30,6 +30,16 @@ export default class Database {
         });
     }
 
+    async addFileInfo(id: string, extension: string, originalName: string) {
+        const sql = "INSERT INTO files (id, extension, originalName) VALUES (?, ?, ?)"
+        return await this.query(sql, [id, extension, originalName]);
+    }
+
+    async getFileInfo(id: string) {
+        const sql = "SELECT extension, originalName FROM files WHERE id=?"
+        return await this.query<{ extension: string, originalName: string }>(sql, [id]);
+    }
+
     query = <T>(query: string, values: any[] = []) => {
         return new Promise<QueryResult<T>>((resolve) => {
             return this.connection.query(query, values, (err, result) => {
