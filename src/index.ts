@@ -103,6 +103,40 @@ app.post("/getUserData", async (req: Request<{}, {}, { id: string }>, res) => {
     });
 })
 
+app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) => {
+    const resultUserId = await database.getUserId(req.body.username)
+    if (resultUserId.success === false || resultUserId.data.length !== 1) {
+        console.log(resultUserId)
+        return res.status(400).send({ description: "User doesn't exist" });
+    }
+
+    // Single data
+    const resultSingle = await database.getSingleData(resultUserId.data[0].id)
+    if (resultSingle.success === false || resultSingle.data.length !== 1) {
+        console.log(resultSingle)
+        return res.status(400).send({ description: "Get single data error" });
+    }
+    // Skills
+    const resultSkills = await database.getSkills(resultUserId.data[0].id)
+    if (resultSkills.success === false) {
+        return res.status(400).send({ description: "Get skills data error" });
+    }
+    // Achievements
+    const resultAchievements = await database.getAchievements(resultUserId.data[0].id)
+    if (resultAchievements.success === false) {
+        return res.status(400).send({ description: "Get achievements data error" });
+    }
+
+    return res.status(200).send({
+        description: "Get data successful",
+        data: {
+            single: resultSingle.data,
+            skills: resultSkills.data,
+            achievements: resultAchievements.data
+        }
+    });
+})
+
 app.get("/", (_, res) => {
     res.send("Hello world!");
 })
