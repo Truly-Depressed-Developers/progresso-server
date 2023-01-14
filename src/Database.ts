@@ -1,9 +1,4 @@
 import mysql from "mysql"
-import sha256, { HMAC } from "fast-sha256";
-import { v4 as uuidv4 } from 'uuid';
-
-var nacl = require('tweetnacl');
-nacl.util = require('tweetnacl-util');
 
 export type QueryResult<T> = { success: false, error: string | undefined } | { success: true, data: T[] };
 
@@ -48,27 +43,17 @@ export default class Database {
     }
 
     async register(username: string, password: string) {
-        // TODO: max username length: 30
-        // TODO check if user exists
+        const sql2 = "INSERT INTO users (username, password) VALUES (?, ?)"
+        return await this.query(sql2, [username, password]);
+    }
 
-        let uintPass = nacl.util.decodeUTF8(password)
-
-        let shaPasswd = sha256(uintPass)
-        let stringPasswd = new TextDecoder().decode(shaPasswd);
-
-        const sql = "INSERT INTO users (username, password) VALUES (?, ?)"
-        return await this.query(sql, [username, stringPasswd]);
+    async getUserId(username: string) {
+        const sql = "SELECT id FROM users WHERE username=?"
+        return await this.query<{ id: number }>(sql, [username]);
     }
 
     async login(username: string, password: string) {
-        // TODO: max username length: 30
-        let uintPass = nacl.util.decodeUTF8(password)
-
-        let shaPasswd = sha256(uintPass)
-        let stringPasswd = new TextDecoder().decode(shaPasswd);
-
         const sql = "SELECT id FROM users WHERE username =? AND password=?"
-        return await this.query<{ id: number }>(sql, [username, stringPasswd]);
+        return await this.query<{ id: number }>(sql, [username, password]);
     }
-
 }
