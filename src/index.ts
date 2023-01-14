@@ -5,6 +5,9 @@ import Database from "./Database";
 import path from "path";
 import formidable from 'formidable';
 import { v4 as uuidv4 } from 'uuid';
+var nacl = require('tweetnacl');
+nacl.util = require('tweetnacl-util');
+
 
 const app = Express();
 app.use(bodyParser.urlencoded({
@@ -20,36 +23,47 @@ app.use(cors({
 const database = new Database();
 
 app.post("/register", async (req: Request<{}, {}, { username: string, password: string }>, res) => {
-    const result = await database.register(
-        req.body.username,
-        req.body.password,
-    )
+    // Check if user exists
+    const getUserResult = await database.getUserId(req.body.username)
+    if (getUserResult.success === false || getUserResult.data.length === 1) {
+        return res.status(400).send({ description: "User already exists" });
+    }
 
-    if (result.success === false || result.data.length !== 1) {
+    // Register
+    let uintPass = nacl.util.decodeUTF8(req.body.password);
+    let shaPasswd = sha256(uintPass)
+    let stringPasswd = new TextDecoder().decode(shaPasswd);
+
+    const registerResult = await database.register(
+        req.body.username,
+        stringPasswd,
+    )
+    if (registerResult.success === false || registerResult.data.length !== 1) {
         return res.status(400).send({ description: "Registration error occured" });
     }
 
-    return res.send({
-        status: true
-    });
+    return res.status(200).send();
 })
 
 app.post("/login", async (req: Request<{}, {}, { username: string, password: string }>, res) => {
+    if (req.body.username.length > 30) {
+        return res.status(400).send({ description: "Username over 30 characters" })
+    }
+
+    let uintPass = nacl.util.decodeUTF8(req.body.password)
+    let shaPasswd = sha256(uintPass)
+    let stringPasswd = new TextDecoder().decode(shaPasswd);
+
     const result = await database.login(
         req.body.username,
-        req.body.password,
+        stringPasswd,
     )
 
     if (result.success === false || result.data.length !== 1) {
-        return res.status(400).send({
-            status: false,
-        });
+        return res.status(400).send();
     }
 
-    console.log(result);
-
-    return res.send({
-        status: true,
+    return res.status(200).send({
         id: result.data[0].id
     });
 })
