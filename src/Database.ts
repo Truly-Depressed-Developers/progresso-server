@@ -89,4 +89,15 @@ export default class Database {
         const sql = "UPDATE users SET bio =? WHERE id =?"
         return await this.query(sql, [bio, id]);
     }
+
+    async getAllPdfs() {
+        const sql = "SELECT * FROM files WHERE extension='pdf'"
+        type file = {
+            id: string,
+            extension: string,
+            originalName: string,
+            uploadTimestsamp: string,
+        }
+        return await this.query<file>(sql);
+    }
 }
