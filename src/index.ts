@@ -1,7 +1,7 @@
 import Express from "express"
 import bodyParser from "body-parser";
 import cors from "cors"
-// import Database from "./Database";
+import Database from "./Database";
 
 const app = Express();
 app.use(bodyParser.urlencoded({
@@ -14,7 +14,7 @@ app.use(cors({
 }))
 
 
-// const database = new Database();
+const database = new Database();
 
 
 app.get("/", (_, res) => {
