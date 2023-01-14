@@ -5,6 +5,7 @@ import Database from "./Database";
 import path from "path";
 import formidable from 'formidable';
 import { v4 as uuidv4 } from 'uuid';
+import sha256, { Hash, HMAC } from "fast-sha256";
 var nacl = require('tweetnacl');
 nacl.util = require('tweetnacl-util');
 
@@ -29,12 +30,18 @@ app.post("/register", async (req: Request<{}, {}, { username: string, password: 
         return res.status(400).send({ description: "User already exists" });
     }
 
+    // Check if username isn't too long
+    if (req.body.username.length > 30) {
+        return res.status(400).send({ description: "Username over 30 characters" })
+    }
+
     // Register
     let uintPass = nacl.util.decodeUTF8(req.body.password);
     let shaPasswd = sha256(uintPass)
     let stringPasswd = new TextDecoder().decode(shaPasswd);
 
     const registerResult = await database.register(
+        uuidv4(),
         req.body.username,
         stringPasswd,
     )
@@ -42,14 +49,10 @@ app.post("/register", async (req: Request<{}, {}, { username: string, password: 
         return res.status(400).send({ description: "Registration error occured" });
     }
 
-    return res.status(200).send();
+    return res.status(200).send({ description: "Registration successful" });
 })
 
 app.post("/login", async (req: Request<{}, {}, { username: string, password: string }>, res) => {
-    if (req.body.username.length > 30) {
-        return res.status(400).send({ description: "Username over 30 characters" })
-    }
-
     let uintPass = nacl.util.decodeUTF8(req.body.password)
     let shaPasswd = sha256(uintPass)
     let stringPasswd = new TextDecoder().decode(shaPasswd);
@@ -60,11 +63,40 @@ app.post("/login", async (req: Request<{}, {}, { username: string, password: str
     )
 
     if (result.success === false || result.data.length !== 1) {
-        return res.status(400).send();
+        return res.status(400).send({ description: "Wrong login data" });
     }
 
     return res.status(200).send({
+        description: "Successful login",
         id: result.data[0].id
+    });
+})
+
+app.post("/title", async (req: Request<{}, {}, { username: string, title: string }>, res) => {
+    const result = await database.setTitle(
+        req.body.username,
+        req.body.title,
+    )
+
+    if (result.success === false || result.data.length !== 1) {
+        return res.status(400).send({ description: "Set title error" });
+    }
+
+    return res.status(200).send({ description: "Set title successful" });
+})
+
+app.get("/title", async (req: Request<{}, {}, { id: string }>, res) => {
+    const result = await database.getTitle(
+        req.body.id
+    )
+
+    if (result.success === false || result.data.length !== 1) {
+        return res.status(400).send({ description: "Get title error" });
+    }
+
+    return res.status(200).send({
+        description: "Get title successful",
+        title: result.data[0].title
     });
 })
 

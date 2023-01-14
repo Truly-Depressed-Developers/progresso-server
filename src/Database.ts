@@ -52,18 +52,30 @@ export default class Database {
         })
     }
 
-    async register(username: string, password: string) {
-        const sql2 = "INSERT INTO users (username, password) VALUES (?, ?)"
-        return await this.query(sql2, [username, password]);
-    }
-
     async getUserId(username: string) {
         const sql = "SELECT id FROM users WHERE username=?"
-        return await this.query<{ id: number }>(sql, [username]);
+        return await this.query<{ id: string }>(sql, [username]);
+    }
+
+    // Login / register
+    async register(id: string, username: string, password: string) {
+        const sql = "INSERT INTO users (id, username, password) VALUES (?, ?, ?)"
+        return await this.query(sql, [id, username, password]);
     }
 
     async login(username: string, password: string) {
         const sql = "SELECT id FROM users WHERE username =? AND password=?"
-        return await this.query<{ id: number }>(sql, [username, password]);
+        return await this.query<{ id: string }>(sql, [username, password]);
+    }
+
+    // Title
+    async getTitle(id: string) {
+        const sql = "SELECT tile FROM users WHERE id=?"
+        return await this.query<{ title: string }>(sql, [id]);
+    }
+
+    async setTitle(id: string, title: string) {
+        const sql = "UPDATE users SET title =? WHERE id =?"
+        return await this.query(sql, [title, id]);
     }
 }
