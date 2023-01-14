@@ -78,4 +78,15 @@ export default class Database {
         const sql = "UPDATE users SET title =? WHERE id =?"
         return await this.query(sql, [title, id]);
     }
+
+    // Title
+    async getBio(id: string) {
+        const sql = "SELECT tile FROM users WHERE id=?"
+        return await this.query<{ bio: string }>(sql, [id]);
+    }
+
+    async setBio(id: string, bio: string) {
+        const sql = "UPDATE users SET bio =? WHERE id =?"
+        return await this.query(sql, [bio, id]);
+    }
 }
