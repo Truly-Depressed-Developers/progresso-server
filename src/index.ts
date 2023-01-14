@@ -86,7 +86,7 @@ app.post("/title", async (req: Request<{}, {}, { username: string, title: string
     return res.status(200).send({ description: "Set title successful" });
 })
 
-app.get("/title", async (req: Request<{}, {}, { id: string }>, res) => {
+app.post("/getTitle", async (req: Request<{}, {}, { id: string }>, res) => {
     const result = await database.getTitle(
         req.body.id
     )
@@ -114,7 +114,7 @@ app.post("/bio", async (req: Request<{}, {}, { id: string, bio: string }>, res) 
     return res.status(200).send({ description: "Set bio successful" });
 })
 
-app.get("/bio", async (req: Request<{}, {}, { id: string }>, res) => {
+app.post("/getBio", async (req: Request<{}, {}, { id: string }>, res) => {
     const result = await database.getBio(
         req.body.id
     )
@@ -144,7 +144,6 @@ app.get("/fileUpload", (_, res) => {
 
 app.post("/file", (req, res) => {
     const form = new formidable.IncomingForm();
-    // console.log(form);
     form.parse(req)
 
     const id = uuidv4();
