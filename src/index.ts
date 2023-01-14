@@ -2,6 +2,8 @@ import Express, { Request } from "express"
 import bodyParser from "body-parser";
 import cors from "cors"
 import Database from "./Database";
+import path from "path";
+import formidable from 'formidable';
 
 const app = Express();
 app.use(bodyParser.urlencoded({
@@ -53,6 +55,21 @@ app.post("/login", async (req: Request<{}, {}, { username: string, password: str
 
 app.get("/", (_, res) => {
     res.send("Hello world!");
+})
+
+app.post("/file", (req, res) => {
+    const form = new formidable.IncomingForm();
+    // console.log(form);
+
+    form.parse(req)
+
+    form.on('fileBegin', function (name, file) {
+        file.filepath = __dirname + '/uploads/' + file.originalFilename;
+    });
+
+    form.on('file', function (name, file) {
+        console.log('Uploaded ' + file.filepath);
+    });
 })
 
 app.listen(3000, () => {
