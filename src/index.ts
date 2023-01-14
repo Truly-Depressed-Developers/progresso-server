@@ -19,6 +19,7 @@ app.use(cors({
     origin: "*",
     credentials: true,
 }))
+app.use("/static", Express.static('public'));
 
 
 const database = new Database();
