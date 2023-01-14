@@ -101,6 +101,34 @@ app.get("/title", async (req: Request<{}, {}, { id: string }>, res) => {
     });
 })
 
+app.post("/bio", async (req: Request<{}, {}, { id: string, bio: string }>, res) => {
+    const result = await database.setBio(
+        req.body.id,
+        req.body.bio,
+    )
+
+    if (result.success === false || result.data.length !== 1) {
+        return res.status(400).send({ description: "Set bio error" });
+    }
+
+    return res.status(200).send({ description: "Set bio successful" });
+})
+
+app.get("/bio", async (req: Request<{}, {}, { id: string }>, res) => {
+    const result = await database.getBio(
+        req.body.id
+    )
+
+    if (result.success === false) {
+        return res.status(400).send({ description: "Get bio error" });
+    }
+
+    return res.status(200).send({
+        description: "Get bio successful",
+        title: result.data[0].bio
+    });
+})
+
 app.get("/", (_, res) => {
     res.send("Hello world!");
 })
