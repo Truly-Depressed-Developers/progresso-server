@@ -84,4 +84,15 @@ export default class Database {
         return await this.query<{ achievements: string }>(achievements, [id]);
     }
     // end user data
+    
+    async getAllPdfs() {
+        const sql = "SELECT * FROM files WHERE extension='pdf'"
+        type file = {
+            id: string,
+            extension: string,
+            originalName: string,
+            uploadTimestsamp: string,
+        }
+        return await this.query<file>(sql);
+    }
 }

@@ -157,6 +157,14 @@ app.get("/file", async (req: Request<{}, {}, { id: string }>, res) => {
     return res.download(file, downloadName);
 })
 
+app.get("/allPdfs", async (_, res) => {
+    const files = await database.getAllPdfs()
+    if (files.success === false) {
+        return res.status(400).send({ description: "Błąd pobierania wszystkich pdfów" });
+    }
+    return res.send(files)
+})
+
 app.listen(3000, () => {
     console.log("Listening on 3000");
 })
