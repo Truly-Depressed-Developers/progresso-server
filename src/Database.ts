@@ -70,7 +70,7 @@ export default class Database {
 
     // User data
     async getSingleData(id: string) {
-        const single_sql = `SELECT u.username, t.title, u.bio, f.originalName, f.extension FROM users AS u JOIN titles AS t ON u.title = t.id JOIN files AS f ON u.profile_photo_id = f.id WHERE u.id = ?`
+        const single_sql = `SELECT u.username, t.title, u.bio, u.profile_photo_id FROM users AS u JOIN titles AS t ON u.title = t.id WHERE u.id = ?`
         return await this.query<{ data: string }>(single_sql, [id]);
     }
 
