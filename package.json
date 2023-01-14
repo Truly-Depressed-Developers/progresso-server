@@ -6,7 +6,8 @@
   "scripts": {
     "start": "gulp",
     "build": "gulp build",
-    "dev": "gulp dev"
+    "dev": "gulp dev",
+    "go": "npm run build && npm run start"
   },
   "repository": {
     "type": "git",
