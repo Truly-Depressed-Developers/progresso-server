@@ -85,7 +85,6 @@ app.post("/getUserData", async (req: Request<{}, {}, { id: string }>, res) => {
     // Single data
     const resultSingle = await database.getSingleData(req.body.id)
     if (resultSingle.success === false || resultSingle.data.length !== 1) {
-        console.log(resultSingle)
         return res.status(400).send({ description: "Get single data error" });
     }
     // Skills
@@ -115,14 +114,12 @@ app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) 
     }
     const resultUserId = await database.getUserId(req.query.username)
     if (resultUserId.success === false || resultUserId.data.length !== 1) {
-        console.log(resultUserId)
         return res.status(400).send({ description: `User ${req.query.username} doesn't exist` });
     }
 
     // Single data
     const resultSingle = await database.getSingleData(resultUserId.data[0].id)
     if (resultSingle.success === false || resultSingle.data.length !== 1) {
-        console.log(resultSingle)
         return res.status(400).send({ description: "Get single data error" });
     }
     // Skills
@@ -157,7 +154,6 @@ app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) 
 app.post("/addQuiz", async (req: Request<{}, {}, { skill_id: number, name: string, questionCount: number, reward: number }>, res) => {
     const result = await database.addQuiz(req.body.skill_id, req.body.name, req.body.questionCount, req.body.reward)
     if (result.success === false) {
-        console.log(result)
         return res.status(400).send({ description: "Error adding the quiz" });
     }
 
@@ -168,14 +164,12 @@ app.post("/addWholeQuestion", async (req: Request<{}, {}, { quiz_id: number, que
     // Add a question -> determine correct answer id -> add anaswers
     const resultAddQ = await database.addQuestion(req.body.quiz_id, req.body.question)
     if (resultAddQ.success === false) {
-        console.log(resultAddQ)
         return res.status(400).send({ description: "Error adding the question" });
     }
 
     // Get question id
     const resultGetQID = await database.getQuestionIdByName(req.body.question)
     if (resultGetQID.success === false || resultGetQID.data.length !== 1) {
-        console.log(resultAddQ)
         return res.status(400).send({ description: "Error getting question id" });
     }
 
@@ -194,7 +188,6 @@ app.post("/addWholeQuestion", async (req: Request<{}, {}, { quiz_id: number, que
         i == correct_ans_id ? correct = 1 : correct = 0
         const result = await database.addAnswer(resultGetQID.data[0].id, req.body.answers[i], correct)
         if (result.success === false) {
-            console.log(result)
             return res.status(400).send({ description: "Error adding an answer" });
         }
     }
@@ -207,7 +200,6 @@ app.post("/addWholeQuestion", async (req: Request<{}, {}, { quiz_id: number, que
 app.get("/getCategories", async (req: Request<{}, {}, {}>, res) => {
     const result = await database.getAvailableCategories()
     if (result.success === false || result.data.length === 0) {
-        console.log(result)
         return res.status(400).send({ description: "Error loading available categories" });
     }
 
@@ -220,7 +212,6 @@ app.get("/getCategories", async (req: Request<{}, {}, {}>, res) => {
 app.get("/getQuizes", async (req: Request<{}, {}, {}>, res) => {
     const result = await database.getAvailableQuizes()
     if (result.success === false || result.data.length === 0) {
-        console.log(result)
         return res.status(400).send({ description: "Error loading available quizes" });
     }
 
@@ -233,7 +224,6 @@ app.get("/getQuizes", async (req: Request<{}, {}, {}>, res) => {
 app.get("/getQuestions", async (req: Request<{}, {}, {}>, res) => {
     const result = await database.getAvailableQuestions()
     if (result.success === false || result.data.length === 0) {
-        console.log(result)
         return res.status(400).send({ description: "Error loading available questions" });
     }
 
@@ -392,7 +382,6 @@ app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) =>
 
     const resultQuestions = await database.getQuestions(parseInt(req.query.id as string))
     if (resultQuestions.success === false || resultQuestions.data.length === 0) {
-        console.log(resultQuestions)
         return res.status(400).send({ description: `Error: no questions or no quiz with id ${req.query.id}` });
     }
 
@@ -406,7 +395,7 @@ app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) =>
 
     let answers: answerType = {};
     for (let i = 0; i < resultQuestions.data.length; i++) {
-        console.log(resultQuestions.data[i].id)
+        (resultQuestions.data[i].id)
         const result = await database.getAnswers(resultQuestions.data[i].id)
         if (result.success === false || result.data.length === 0) {
             return res.status(400).send({ description: "Error loading answer" });

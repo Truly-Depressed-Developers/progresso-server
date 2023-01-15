@@ -167,8 +167,6 @@ export default class Database {
     }
 
     async getAnswer(id: number) {
-        console.log(id);
-
         const sql = `SELECT correct FROM answers WHERE id=?`
         return await this.query<{ correct: boolean }>(sql, [id]);
     }
