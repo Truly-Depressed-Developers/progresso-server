@@ -57,7 +57,7 @@ export default class Database {
         return await this.query<{ id: string }>(sql, [username]);
     }
 
-    // Login / register
+    //#region Login / register
     async register(id: string, username: string, password: string) {
         const sql = "INSERT INTO users (id, username, password) VALUES (?, ?, ?)"
         return await this.query(sql, [id, username, password]);
@@ -67,8 +67,9 @@ export default class Database {
         const sql = "SELECT id FROM users WHERE username =? AND password=?"
         return await this.query<{ id: string }>(sql, [username, password]);
     }
+    //#endregion
 
-    // User data
+    //#region User data
     async getSingleData(id: string) {
         const single_sql = `SELECT u.username, t.title, u.bio, u.profile_photo_id FROM users AS u JOIN titles AS t ON u.title = t.id WHERE u.id = ?`
         return await this.query<{ data: string }>(single_sql, [id]);
@@ -83,9 +84,9 @@ export default class Database {
         const achievements = `SELECT a.id, a.name, a.description, a.photo_url FROM user_achievements AS u JOIN achievements AS a ON u.achievement_id = a.id WHERE u.user_id = ?`
         return await this.query<{ achievements: string }>(achievements, [id]);
     }
-    // end user data
+    //#endregion
 
-    // Add quiz stuff
+    //#region Add quiz stuff
     async addQuiz(skill_id: number, name: string, questionCount: number, reward: number) {
         const sql = "INSERT INTO quizes (skill_id, name, question_count, reward) VALUES (?, ?, ?, ?)"
         return await this.query(sql, [skill_id, name, questionCount, reward]);
@@ -100,7 +101,9 @@ export default class Database {
         const sql = "INSERT INTO quizes (question_id, answer, correct) VALUES (?, ?, ?)"
         return await this.query(sql, [questionId, answer, correct]);
     }
+    //#endregion
 
+    //#region get select options
     async getAvailableCategories() {
         const sql = "SELECT id, name FROM skills"
         return await this.query<{ id: string }>(sql, []);
@@ -115,7 +118,9 @@ export default class Database {
         const sql = "SELECT id, question FROM questions"
         return await this.query<{ id: string }>(sql, []);
     }
+    //#endregion
 
+    //#region Points management
     async getPoints(id: string) {
         const sql = "SELECT points FROM users WHERE id=?"
         return await this.query<{ points: number }>(sql, [id]);
@@ -125,7 +130,7 @@ export default class Database {
         const sql = "UPDATE users SET points = points + ? WHERE id = ?"
         return await this.query(sql, [points, id]);
     }
-
+    //#endregion
 
     async getAllPdfs() {
         const sql = "SELECT * FROM files WHERE extension='pdf'"
@@ -144,4 +149,25 @@ export default class Database {
         const sql = `SELECT correct FROM answers WHERE id=?`
         return await this.query<{ correct: boolean }>(sql, [id]);
     }
+
+    //#region Generate quiz
+    async getQuestions(id: number) {
+        const sql = "SELECT id, question FROM questions WHERE quiz_id = ?"
+        type question = {
+            id: number,
+            question: string
+        }
+        return await this.query<question[]>(sql, [id]);
+    }
+
+    async getAnswers(id: number) {
+        const sql = "SELECT id, answer FROM answers WHERE question_id = ?"
+        type answer = {
+            id: number,
+            answer: string
+        }
+        return await this.query<answer[]>(sql, [id]);
+    }
+
+    //#endregion
 }
