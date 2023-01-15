@@ -303,7 +303,7 @@ app.get("/allPdfs", async (_, res) => {
     return res.send(files)
 })
 
-app.post("/evaluateQuiz", async (req: Request<{}, {}, { ids: number[] }>, res) => {
+app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[], points: number }>, res) => {
     if (!req.body.ids || req.body.ids.length === 0) {
         return res.status(400).send({ description: "ids are undefined" });
     }
@@ -312,7 +312,7 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { ids: number[] }>, res) =
     for (let i = 0; i < req.body.ids.length; i++) {
         const answer = await database.getAnswer(req.body.ids[i])
         if (answer.success === false || answer.data.length !== 1) {
-            return res.status(400).send({ description: "Błąd pobierania odpowiedzi" });
+            return res.status(400).send({ description: "Error getting answer" });
         }
         if (!answer.data[0].correct) {
             correct = answer.data[0].correct;
@@ -321,13 +321,51 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { ids: number[] }>, res) =
     }
 
     let description;
-    correct ? description = "The quiz is all correct!" : description = "The quiz is not correct!"
+    if (correct) {
+        description = "The quiz is all correct!"
+        addPoints(req.body.id, req.body.points);
+    } else {
+        description = "The quiz is not correct!"
+    }
 
     return res.send({
         description: description,
         correct: correct
     })
 })
+
+app.get("/fileDownload", async (req: Request<{}, {}, { id: string }>, res) => {
+
+})
+
+async function addPoints(id: string, points: number) {
+    if (id) {
+        return {
+            status: false,
+            description: "id is undefined"
+        };
+    }
+    if (points) {
+        return {
+            status: false,
+            description: "points undefined"
+        };
+    }
+
+    const response = await database.addPoints(id, points)
+    if (response.success === false || response.data.length !== 1) {
+        return {
+            status: false,
+            description: "Error adding points"
+        };
+    }
+
+    return {
+        status: true,
+        description: "Points were added correctly"
+    }
+
+}
 
 app.listen(3000, () => {
     console.log("Listening on 3000");

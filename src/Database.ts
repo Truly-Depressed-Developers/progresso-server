@@ -116,6 +116,17 @@ export default class Database {
         return await this.query<{ id: string }>(sql, []);
     }
 
+    async getPoints(id: string) {
+        const sql = "SELECT points FROM users WHERE id=?"
+        return await this.query<{ points: number }>(sql, [id]);
+    }
+
+    async addPoints(id: string, points: number) {
+        const sql = "UPDATE users SET points = points + ? WHERE id = ?"
+        return await this.query(sql, [points, id]);
+    }
+
+
     async getAllPdfs() {
         const sql = "SELECT * FROM files WHERE extension='pdf'"
         type file = {
