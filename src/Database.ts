@@ -196,4 +196,34 @@ export default class Database {
         const sql = "SELECT reward, skill_id, name FROM quizes WHERE id = ?";
         return await this.query<{ reward: number, skill_id: number, name: string }>(sql, [quiz_id])
     }
+
+    //#region Leaderboards
+    async getSkillLeaderboardGroupedBySkills() {
+        const sql = `
+            SELECT user_id as id, skill_id, skills.name as skill_name, sum(points) as points FROM points_history
+            JOIN skills ON skills.id=points_history.skill_id
+            GROUP BY user_id, skill_id
+            ORDER BY points DESC`
+        return await this.query<{ id: number, skill_id: number, skill_name: string, points: number }>(sql, [])
+    }
+
+    async getSkillLeaderboardBySkill(skill_id: number) {
+        const sql = `
+            SELECT user_id as id, skill_id, skills.name as skill_name, sum(points) as points FROM points_history
+            JOIN skills ON skills.id=points_history.skill_id
+            WHERE skill_id=?
+            GROUP BY user_id, skill_id
+            ORDER BY points DESC`
+        return await this.query<{ id: number, skill_id: number, skill_name: string, points: number }>(sql, [skill_id])
+    }
+
+    async getSkillLeaderboardSumAllSkills() {
+        const sql = `
+            SELECT user_id as id, sum(points) as points FROM points_history
+            JOIN skills ON skills.id=points_history.skill_id
+            GROUP BY user_id
+            ORDER BY points DESC;`
+        return await this.query<{ id: number, points: number }>(sql, [])
+    }
+    //#endregion
 }

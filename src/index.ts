@@ -419,6 +419,30 @@ app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) =>
     });
 })
 
+app.get("/skillLeaderboardGroupedBySkills", async (req, res) => {
+    const users = await database.getSkillLeaderboardGroupedBySkills()
+    if (users.success === false) {
+        return res.status(400).send({ description: "Błąd pobierania leaderboards" });
+    }
+    return res.send(users);
+})
+
+app.get("/skillLeaderboardBySkill", async (req: Request<{}, {}, { skill_id: number }>, res) => {
+    const users = await database.getSkillLeaderboardBySkill(parseInt(req.query.skill_id as string))
+    if (users.success === false) {
+        return res.status(400).send({ description: "Błąd pobierania leaderboards" });
+    }
+    return res.send(users);
+})
+
+app.get("/skillLeaderboardSumAllSkills", async (req, res) => {
+    const users = await database.getSkillLeaderboardSumAllSkills()
+    if (users.success === false) {
+        return res.status(400).send({ description: "Błąd pobierania leaderboards" });
+    }
+    return res.send(users);
+})
+
 app.listen(3000, () => {
     console.log("Listening on 3000");
 })
