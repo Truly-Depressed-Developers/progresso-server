@@ -72,8 +72,8 @@ export default class Database {
 
     //#region User data
     async getSingleData(id: string) {
-        const single_sql = `SELECT u.username, t.title, u.bio, u.profile_photo_id FROM users AS u JOIN titles AS t ON u.title = t.id WHERE u.id = ?`
-        return await this.query<{ data: string }>(single_sql, [id]);
+        const single_sql = `SELECT u.username, t.title, u.bio, u.profile_photo_id FROM users AS u LEFT JOIN titles AS t ON u.title = t.id WHERE u.id = ?`
+        return await this.query<{ username: string, title: string, bio: string, profile_photo_id: string }>(single_sql, [id]);
     }
 
     async getAchievements(id: string) {

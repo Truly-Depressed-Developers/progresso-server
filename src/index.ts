@@ -120,6 +120,7 @@ app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) 
     // Single data
     const resultSingle = await database.getSingleData(resultUserId.data[0].id)
     if (resultSingle.success === false || resultSingle.data.length !== 1) {
+        console.log(resultUserId.data[0].id)
         return res.status(400).send({ description: "Get single data error" });
     }
     // Skills
@@ -291,7 +292,9 @@ app.get("/file", async (req: Request<{}, {}, { id: string }>, res) => {
     if (fileInfo.success === false) {
         return res.status(400).send({ description: "Brak takiego pliku" });
     }
-
+    if (!fileInfo.data[0] || !fileInfo.data[0].extension) {
+        return res.status(400).send({ description: "Plik nie ma rozszerzenia" });
+    }
     const file = __dirname + '/uploads/' + req.query.id + "." + fileInfo.data[0].extension;
     console.log("zwracam plik " + file)
     var data = fs.readFileSync(file);
