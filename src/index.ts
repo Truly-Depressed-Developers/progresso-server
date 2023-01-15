@@ -233,6 +233,17 @@ app.get("/allPdfs", async (_, res) => {
     return res.send(files)
 })
 
+app.get("/isAnswerCorrect", async (req: Request<{}, {}, { id: number }>, res) => {
+    if (!req.query.id) {
+        return res.status(400).send({ description: "id jest undefined" });
+    }
+    const answer = await database.getAnswer(parseInt(req.query.id as string))
+    if (answer.success === false || answer.data.length !== 1) {
+        return res.status(400).send({ description: "Błąd pobierania odpowiedzi" });
+    }
+    return res.send({ correct: answer.data[0].correct })
+})
+
 app.listen(3000, () => {
     console.log("Listening on 3000");
 })

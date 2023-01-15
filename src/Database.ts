@@ -95,4 +95,9 @@ export default class Database {
         }
         return await this.query<file>(sql);
     }
+
+    async getAnswer(id: number) {
+        const sql = `SELECT correct FROM answers WHERE id=?`
+        return await this.query<{ correct: boolean }>(sql, [id]);
+    }
 }
