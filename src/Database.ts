@@ -84,6 +84,22 @@ export default class Database {
         const achievements = `SELECT a.id, a.name, a.description, a.photo_url FROM user_achievements AS u JOIN achievements AS a ON u.achievement_id = a.id WHERE u.user_id = ?`
         return await this.query<{ achievements: string }>(achievements, [id]);
     }
+
+    async getPointsHistory(id: string) {
+        const pointsHistory = `
+        SELECT h.id, h.points, a.name as activity_type, h.activity_name, h.timestamp FROM points_history as h
+        JOIN users as u ON u.id=h.user_id
+        JOIN points_history_activitites as a ON a.id=h.activity_id
+        WHERE u.id=?`
+        type pointsHistoryType = {
+            id: number,
+            points: number,
+            activity_type: string,
+            activity_name: string,
+            timestamp: string,
+        }
+        return await this.query<pointsHistoryType>(pointsHistory, [id]);
+    }
     //#endregion
 
     //#region Add quiz stuff
