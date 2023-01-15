@@ -317,9 +317,20 @@ app.get("/allPdfs", async (_, res) => {
 })
 //#endregion
 
-app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[], points: number }>, res) => {
+app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[], quiz_id: number }>, res) => {
     if (!req.body.ids || req.body.ids.length === 0) {
         return res.status(400).send({ description: "ids are undefined" });
+    }
+    if (!req.body.id) {
+        return res.status(400).send({ description: "id is undefined" });
+    }
+    if (!req.body.quiz_id) {
+        return res.status(400).send({ description: "quiz_id is undefined" });
+    }
+
+    const answerPoints = await database.getPointsForQuiz(req.body.quiz_id)
+    if (answerPoints.success === false || answerPoints.data.length !== 1) {
+        return res.status(400).send({ description: "Error getting answer" });
     }
 
     let correct = false;
@@ -328,7 +339,8 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[
         if (answer.success === false || answer.data.length !== 1) {
             return res.status(400).send({ description: "Error getting answer" });
         }
-        if (!answer.data[0].correct) {
+
+        if (answer.data[0].correct) {
             correct = answer.data[0].correct;
             break;
         }
@@ -337,7 +349,7 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[
     let description;
     if (correct) {
         description = "The quiz is all correct!"
-        addPoints(req.body.id, req.body.points);
+        addPoints(req.body.id, answerPoints.data[0].points);
     } else {
         description = "The quiz is not correct!"
     }
