@@ -192,7 +192,7 @@ app.post("/addWholeQuestion", async (req: Request<{}, {}, { quiz_id: number, que
     for (let i = 0; i < req.body.answers.length; i++) {
         let correct;
         i == correct_ans_id ? correct = 1 : correct = 0
-        const result = await database.addAnswer(parseInt(resultGetQID.data[0].id), req.body.answers[i], correct)
+        const result = await database.addAnswer(resultGetQID.data[0].id, req.body.answers[i], correct)
         if (result.success === false) {
             console.log(result)
             return res.status(400).send({ description: "Error adding an answer" });
@@ -393,7 +393,7 @@ app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) =>
     const resultQuestions = await database.getQuestions(parseInt(req.query.id as string))
     if (resultQuestions.success === false || resultQuestions.data.length === 0) {
         console.log(resultQuestions)
-        return res.status(400).send({ description: `Error loading questions (quiz id ${req.query.id}may not exist)` });
+        return res.status(400).send({ description: `Error: no questions or no quiz with id ${req.query.id}` });
     }
 
 

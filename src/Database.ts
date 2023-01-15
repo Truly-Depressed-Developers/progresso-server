@@ -118,7 +118,7 @@ export default class Database {
 
     async getQuestionIdByName(question: string) {
         const sql = "SELECT id FROM questions WHERE question = ?";
-        return await this.query<{ id: string }>(sql, [question]);
+        return await this.query<{ id: number }>(sql, [question]);
     }
     //#endregion
 
