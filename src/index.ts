@@ -6,6 +6,7 @@ import path from "path";
 import formidable from 'formidable';
 import { v4 as uuidv4 } from 'uuid';
 import sha256, { Hash, HMAC } from "fast-sha256";
+import * as fs from 'fs';
 var nacl = require('tweetnacl');
 nacl.util = require('tweetnacl-util');
 
@@ -178,6 +179,23 @@ app.post("/file", (req, res) => {
 })
 
 app.get("/file", async (req: Request<{}, {}, { id: string }>, res) => {
+    if (typeof req.query.id != "string") {
+        return res.status(400).send({ description: "id musi być stringiem" });
+    }
+
+    const fileInfo = await database.getFileInfo(req.query.id)
+    if (fileInfo.success === false) {
+        return res.status(400).send({ description: "Brak takiego pliku" });
+    }
+
+    const file = __dirname + '/uploads/' + req.query.id + "." + fileInfo.data[0].extension;
+    console.log("zwracam plik " + file)
+    var data = fs.readFileSync(file);
+    res.contentType("application/pdf");
+    return res.send(data);
+})
+
+app.get("/fileDownload", async (req: Request<{}, {}, { id: string }>, res) => {
     if (typeof req.query.id != "string") {
         return res.status(400).send({ description: "id musi być stringiem" });
     }
