@@ -87,14 +87,16 @@ export default class Database {
 
     async getPointsHistory(id: string) {
         const pointsHistory = `
-        SELECT h.id, h.points, a.name as activity_type, h.activity_name, h.timestamp FROM points_history as h
+        SELECT h.id, h.points, s.name as skill, a.name as activity_type, h.activity_name, h.timestamp FROM points_history as h
         JOIN users as u ON u.id=h.user_id
         JOIN points_history_activitites as a ON a.id=h.activity_id
+        JOIN skills as s ON s.id=h.skill_id
         WHERE u.id=?
         ORDER BY timestamp DESC`
         type pointsHistoryType = {
             id: number,
             points: number,
+            skill: string,
             activity_type: string,
             activity_name: string,
             timestamp: string,
