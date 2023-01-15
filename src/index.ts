@@ -334,10 +334,6 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[
     })
 })
 
-app.get("/fileDownload", async (req: Request<{}, {}, { id: string }>, res) => {
-
-})
-
 async function addPoints(id: string, points: number) {
     if (id) {
         return {
