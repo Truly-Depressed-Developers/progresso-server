@@ -23,9 +23,9 @@ app.use(cors({
 }))
 app.use("/static", Express.static('public'));
 
-
 const database = new Database();
 
+//#region login / register
 app.post("/register", async (req: Request<{}, {}, { username: string, password: string }>, res) => {
     // Check if user exists
     const getUserResult = await database.getUserId(req.body.username)
@@ -75,8 +75,9 @@ app.post("/login", async (req: Request<{}, {}, { username: string, password: str
         username: req.body.username
     });
 })
+//#endregion
 
-
+//#region Display user data
 app.post("/getUserData", async (req: Request<{}, {}, { id: string }>, res) => {
     // Single data
     const resultSingle = await database.getSingleData(req.body.id)
@@ -141,7 +142,9 @@ app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) 
         }
     });
 })
+//#endregion
 
+//#region Add quiz and its stuff
 app.post("/addQuiz", async (req: Request<{}, {}, { skill_id: number, name: string, questionCount: number, reward: number }>, res) => {
     const result = await database.addQuiz(req.body.skill_id, req.body.name, req.body.questionCount, req.body.reward)
     if (result.success === false) {
@@ -171,7 +174,9 @@ app.post("/addAnswer", async (req: Request<{}, {}, { questionId: number, answer:
 
     return res.status(200).send({ description: "Successfully added an answer" });
 })
+//#endregion
 
+//#region get stuff for select display
 app.get("/getCategories", async (req: Request<{}, {}, {}>, res) => {
     const result = await database.getAvailableCategories()
     if (result.success === false || result.data.length === 0) {
@@ -210,11 +215,13 @@ app.get("/getQuestions", async (req: Request<{}, {}, {}>, res) => {
         data: result.data
     });
 })
+//#endregion
 
 app.get("/", (_, res) => {
     res.send("Hello world!");
 })
 
+//#region file stuff
 app.get("/fileUpload", (_, res) => {
     let text = ""
     text += '<form action="file" method="POST" enctype="multipart/form-data">'
@@ -302,8 +309,9 @@ app.get("/allPdfs", async (_, res) => {
     }
     return res.send(files)
 })
+//#endregion
 
-app.post("/evaluateQuiz", async (req: Request<{}, {}, { ids: number[] }>, res) => {
+app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[], points: number }>, res) => {
     if (!req.body.ids || req.body.ids.length === 0) {
         return res.status(400).send({ description: "ids are undefined" });
     }
@@ -312,7 +320,7 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { ids: number[] }>, res) =
     for (let i = 0; i < req.body.ids.length; i++) {
         const answer = await database.getAnswer(req.body.ids[i])
         if (answer.success === false || answer.data.length !== 1) {
-            return res.status(400).send({ description: "Błąd pobierania odpowiedzi" });
+            return res.status(400).send({ description: "Error getting answer" });
         }
         if (!answer.data[0].correct) {
             correct = answer.data[0].correct;
@@ -321,13 +329,76 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { ids: number[] }>, res) =
     }
 
     let description;
-    correct ? description = "The quiz is all correct!" : description = "The quiz is not correct!"
+    if (correct) {
+        description = "The quiz is all correct!"
+        addPoints(req.body.id, req.body.points);
+    } else {
+        description = "The quiz is not correct!"
+    }
 
     return res.send({
         description: description,
         correct: correct
     })
 })
+
+app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) => {
+    if (!req.query.id) {
+        return res.status(400).send({ description: "id is undefined" });
+    }
+
+    const resultQuestions = await database.getQuestions(parseInt(req.query.id as string))
+    if (resultQuestions.success === false || resultQuestions.data.length === 0) {
+        console.log(resultQuestions)
+        return res.status(400).send({ description: "Error loading questions" });
+    }
+
+    let answers = [];
+    for (let i = 0; i < resultQuestions.data.length; i++) {
+        const result = await database.getAnswers(resultQuestions.data[i].id)
+        if (result.success === false || result.data.length === 0) {
+            console.log(result)
+            return res.status(400).send({ description: "Error loading answer" });
+        }
+        answers.push(result.data[0])
+    }
+
+    return res.status(200).send({
+        description: "Success getting the whole quiz",
+        quizId: req.query.id,
+        questions: resultQuestions.data,
+        answers: answers
+    });
+})
+
+async function addPoints(id: string, points: number) {
+    if (id) {
+        return {
+            status: false,
+            description: "id is undefined"
+        };
+    }
+    if (points) {
+        return {
+            status: false,
+            description: "points undefined"
+        };
+    }
+
+    const response = await database.addPoints(id, points)
+    if (response.success === false || response.data.length !== 1) {
+        return {
+            status: false,
+            description: "Error adding points"
+        };
+    }
+
+    return {
+        status: true,
+        description: "Points were added correctly"
+    }
+
+}
 
 app.listen(3000, () => {
     console.log("Listening on 3000");
