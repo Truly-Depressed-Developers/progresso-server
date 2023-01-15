@@ -169,20 +169,22 @@ export default class Database {
     //#region Generate quiz
     async getQuestions(id: number) {
         const sql = "SELECT id, question FROM questions WHERE quiz_id = ?"
+        console.log(id)
         type question = {
             id: number,
             question: string
         }
-        return await this.query<question[]>(sql, [id]);
+        return await this.query<question>(sql, [id]);
     }
 
     async getAnswers(id: number) {
-        const sql = "SELECT id, answer FROM answers WHERE question_id = ?"
+        const sql = "SELECT id, answer, question_id FROM answers WHERE question_id = ?"
         type answer = {
             id: number,
-            answer: string
+            answer: string,
+            question_id: number,
         }
-        return await this.query<answer[]>(sql, [id]);
+        return await this.query<answer>(sql, [id]);
     }
 
     //#endregion

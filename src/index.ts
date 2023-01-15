@@ -356,17 +356,33 @@ app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) =>
     const resultQuestions = await database.getQuestions(parseInt(req.query.id as string))
     if (resultQuestions.success === false || resultQuestions.data.length === 0) {
         console.log(resultQuestions)
-        return res.status(400).send({ description: "Error loading questions" });
+        return res.status(400).send({ description: `Error loading questions (quiz id ${req.query.id}may not exist)` });
     }
 
-    let answers = [];
+
+    type answerType = {
+        [x: number]: {
+            id: number,
+            answer: string,
+        }[]
+    }
+
+    let answers: answerType = {};
     for (let i = 0; i < resultQuestions.data.length; i++) {
+        console.log(resultQuestions.data[i].id)
         const result = await database.getAnswers(resultQuestions.data[i].id)
         if (result.success === false || result.data.length === 0) {
-            console.log(result)
             return res.status(400).send({ description: "Error loading answer" });
         }
-        answers.push(result.data[0])
+        for (let answer of result.data) {
+            answers[resultQuestions.data[i].id] = []
+        }
+        for (let answer of result.data) {
+            answers[resultQuestions.data[i].id].push({
+                id: answer.id,
+                answer: answer.answer
+            })
+        }
     }
 
     return res.status(200).send({
