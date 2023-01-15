@@ -7,6 +7,7 @@ const user = "bitehack2023"
 const password = "28pTQYMQH9qomf"
 const database = "bitehack2023"
 
+const MAX_LEADERBOARDS_RECORDS = 7
 
 export default class Database {
     connection: mysql.Connection
@@ -200,30 +201,36 @@ export default class Database {
     //#region Leaderboards
     async getSkillLeaderboardGroupedBySkills() {
         const sql = `
-            SELECT user_id as id, skill_id, skills.name as skill_name, sum(points) as points FROM points_history
+            SELECT username, skill_id, skills.name as skill_name, sum(points) as points FROM points_history
             JOIN skills ON skills.id=points_history.skill_id
+            JOIN users ON users.id=points_history.user_id
             GROUP BY user_id, skill_id
-            ORDER BY points DESC`
-        return await this.query<{ id: number, skill_id: number, skill_name: string, points: number }>(sql, [])
+            ORDER BY points DESC
+            LIMIT ${MAX_LEADERBOARDS_RECORDS}`
+        return await this.query<{ username: string, skill_id: number, skill_name: string, points: number }>(sql, [])
     }
 
     async getSkillLeaderboardBySkill(skill_id: number) {
         const sql = `
-            SELECT user_id as id, skill_id, skills.name as skill_name, sum(points) as points FROM points_history
+            SELECT username, skill_id, skills.name as skill_name, sum(points) as points FROM points_history
             JOIN skills ON skills.id=points_history.skill_id
+            JOIN users ON users.id=points_history.user_id
             WHERE skill_id=?
             GROUP BY user_id, skill_id
-            ORDER BY points DESC`
-        return await this.query<{ id: number, skill_id: number, skill_name: string, points: number }>(sql, [skill_id])
+            ORDER BY points DESC
+            LIMIT ${MAX_LEADERBOARDS_RECORDS}`
+        return await this.query<{ username: string, skill_id: number, skill_name: string, points: number }>(sql, [skill_id])
     }
 
     async getSkillLeaderboardSumAllSkills() {
         const sql = `
-            SELECT user_id as id, sum(points) as points FROM points_history
+            SELECT username, sum(points) as points FROM points_history
             JOIN skills ON skills.id=points_history.skill_id
+            JOIN users ON users.id=points_history.user_id
             GROUP BY user_id
-            ORDER BY points DESC;`
-        return await this.query<{ id: number, points: number }>(sql, [])
+            ORDER BY points DESC
+            LIMIT ${MAX_LEADERBOARDS_RECORDS}`
+        return await this.query<{ username: string, points: number }>(sql, [])
     }
     //#endregion
 }
