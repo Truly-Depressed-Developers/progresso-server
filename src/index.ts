@@ -161,24 +161,42 @@ app.post("/addQuiz", async (req: Request<{}, {}, { skill_id: number, name: strin
     return res.status(200).send({ description: "Successfully added a quiz" });
 })
 
-app.post("/addQuestion", async (req: Request<{}, {}, { quizId: string, question: string }>, res) => {
-    const result = await database.addQuestion(req.body.quizId, req.body.question)
-    if (result.success === false) {
-        console.log(result)
+app.post("/addWholeQuestion", async (req: Request<{}, {}, { quiz_id: number, question: string, answers: string[], correctAnswer: string }>, res) => {
+    // Add a question -> determine correct answer id -> add anaswers
+    const resultAddQ = await database.addQuestion(req.body.quiz_id, req.body.question)
+    if (resultAddQ.success === false) {
+        console.log(resultAddQ)
         return res.status(400).send({ description: "Error adding the question" });
     }
 
-    return res.status(200).send({ description: "Successfully added a question" });
-})
-
-app.post("/addAnswer", async (req: Request<{}, {}, { questionId: number, answer: string, correct: boolean }>, res) => {
-    const result = await database.addAnswer(req.body.questionId, req.body.answer, req.body.correct)
-    if (result.success === false) {
-        console.log(result)
-        return res.status(400).send({ description: "Error adding an answer" });
+    // Get question id
+    const resultGetQID = await database.getQuestionIdByName(req.body.question)
+    if (resultGetQID.success === false || resultGetQID.data.length !== 1) {
+        console.log(resultAddQ)
+        return res.status(400).send({ description: "Error getting question id" });
     }
 
-    return res.status(200).send({ description: "Successfully added an answer" });
+    // Determine correct answerw
+    let correct_ans_id;
+    for (let i = 0; i < req.body.answers.length; i++) {
+        if (req.body.answers[i] === req.body.correctAnswer) {
+            correct_ans_id = i;
+            break;
+        }
+    }
+
+    // Add answers to the database
+    for (let i = 0; i < req.body.answers.length; i++) {
+        let correct;
+        i == correct_ans_id ? correct = 1 : correct = 0
+        const result = await database.addAnswer(parseInt(resultGetQID.data[0].id), req.body.answers[i], correct)
+        if (result.success === false) {
+            console.log(result)
+            return res.status(400).send({ description: "Error adding an answer" });
+        }
+    }
+
+    return res.status(200).send({ description: "Successfully added a question with answers" });
 })
 //#endregion
 

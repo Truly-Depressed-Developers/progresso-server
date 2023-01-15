@@ -111,14 +111,19 @@ export default class Database {
         return await this.query(sql, [skill_id, name, questionCount, reward]);
     }
 
-    async addQuestion(quizId: string, question: string) {
-        const sql = "INSERT INTO quizes (quiz_id, question, correct_answer_id) VALUES (?, ?)"
-        return await this.query(sql, [quizId, question]);
+    async addQuestion(quiz_id: number, question: string) {
+        const sql = "INSERT INTO questions (quiz_id, question) VALUES (?, ?)"
+        return await this.query(sql, [quiz_id, question]);
     }
 
-    async addAnswer(questionId: number, answer: string, correct: boolean) {
-        const sql = "INSERT INTO quizes (question_id, answer, correct) VALUES (?, ?, ?)"
+    async addAnswer(questionId: number, answer: string, correct: number) {
+        const sql = "INSERT INTO answers (question_id, answer, correct) VALUES (?, ?, ?)"
         return await this.query(sql, [questionId, answer, correct]);
+    }
+
+    async getQuestionIdByName(question: string) {
+        const sql = "SELECT id FROM questions WHERE question = ?";
+        return await this.query<{ id: string }>(sql, [question]);
     }
     //#endregion
 
