@@ -132,13 +132,19 @@ app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) 
     if (resultAchievements.success === false) {
         return res.status(400).send({ description: "Get achievements data error" });
     }
+    // Points history
+    const resultPointsHistory = await database.getPointsHistory(resultUserId.data[0].id)
+    if (resultPointsHistory.success === false) {
+        return res.status(400).send({ description: "Get points history data error" });
+    }
 
     return res.status(200).send({
         description: "Get data successful",
         data: {
             single: resultSingle.data,
             skills: resultSkills.data,
-            achievements: resultAchievements.data
+            achievements: resultAchievements.data,
+            points_history: resultPointsHistory.data,
         }
     });
 })
