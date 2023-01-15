@@ -145,9 +145,9 @@ export default class Database {
         return await this.query<{ points: number }>(sql, [id]);
     }
 
-    async addPoints(id: string, points: number) {
-        const sql = "UPDATE users SET points = points + ? WHERE id = ?"
-        return await this.query(sql, [points, id]);
+    async addPoints(user_id: string, points: number, skill_id: number, activity_id: number, activity_name: string) {
+        const sql = "INSERT INTO points_history (user_id, points, skill_id, activity_id, activity_name) VALUES (?, ?, ?, ?, ?)"
+        return await this.query(sql, [user_id, points, skill_id, activity_id, activity_name]);
     }
     //#endregion
 
@@ -190,8 +190,8 @@ export default class Database {
     }
     //#endregion
 
-    async getPointsForQuiz(quiz_id: number) {
-        const sql = "SELECT reward FROM quizes WHERE id = ?";
-        return await this.query<{ points: number }>(sql, [quiz_id])
+    async getQuizData(quiz_id: number) {
+        const sql = "SELECT reward, skill_id, name FROM quizes WHERE id = ?";
+        return await this.query<{ reward: number, skill_id: number, name: string }>(sql, [quiz_id])
     }
 }

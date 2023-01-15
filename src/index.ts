@@ -25,6 +25,9 @@ app.use("/static", Express.static('public'));
 
 const database = new Database();
 
+
+const QUIZ_ACTIVITY_ID = 1
+
 //#region login / register
 app.post("/register", async (req: Request<{}, {}, { username: string, password: string }>, res) => {
     // Check if user exists
@@ -328,7 +331,7 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[
         return res.status(400).send({ description: "quiz_id is undefined" });
     }
 
-    const answerPoints = await database.getPointsForQuiz(req.body.quiz_id)
+    const answerPoints = await database.getQuizData(req.body.quiz_id)
     if (answerPoints.success === false || answerPoints.data.length !== 1) {
         return res.status(400).send({ description: "Error getting answer" });
     }
@@ -348,8 +351,8 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[
 
     let description;
     if (correct) {
-        description = "The quiz is all correct!"
-        addPoints(req.body.id, answerPoints.data[0].points);
+        description = `The quiz is all correct! Added ${answerPoints.data[0].reward} points`
+        database.addPoints(req.body.id, answerPoints.data[0].reward, answerPoints.data[0].skill_id, QUIZ_ACTIVITY_ID, answerPoints.data[0].name);
     } else {
         description = "The quiz is not correct!"
     }
@@ -404,35 +407,6 @@ app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) =>
         answers: answers
     });
 })
-
-async function addPoints(id: string, points: number) {
-    if (id) {
-        return {
-            status: false,
-            description: "id is undefined"
-        };
-    }
-    if (points) {
-        return {
-            status: false,
-            description: "points undefined"
-        };
-    }
-
-    const response = await database.addPoints(id, points)
-    if (response.success === false || response.data.length !== 1) {
-        return {
-            status: false,
-            description: "Error adding points"
-        };
-    }
-
-    return {
-        status: true,
-        description: "Points were added correctly"
-    }
-
-}
 
 app.listen(3000, () => {
     console.log("Listening on 3000");
