@@ -141,8 +141,8 @@ app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) 
     });
 })
 
-app.post("/addQuiz", async (req: Request<{}, {}, { category: number, name: string, questionCount: number, reward: number }>, res) => {
-    const result = await database.addQuiz(req.body.category, req.body.name, req.body.questionCount, req.body.reward)
+app.post("/addQuiz", async (req: Request<{}, {}, { skill_id: number, name: string, questionCount: number, reward: number }>, res) => {
+    const result = await database.addQuiz(req.body.skill_id, req.body.name, req.body.questionCount, req.body.reward)
     if (result.success === false) {
         console.log(result)
         return res.status(400).send({ description: "Error adding the quiz" });

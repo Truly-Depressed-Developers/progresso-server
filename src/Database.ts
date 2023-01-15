@@ -86,9 +86,9 @@ export default class Database {
     // end user data
 
     // Add quiz stuff
-    async addQuiz(category: number, name: string, questionCount: number, reward: number) {
-        const sql = "INSERT INTO quizes (category, name, question_count, reward) VALUES (?, ?, ?, ?)"
-        return await this.query(sql, [category, name, questionCount, reward]);
+    async addQuiz(skill_id: number, name: string, questionCount: number, reward: number) {
+        const sql = "INSERT INTO quizes (skill_id, name, question_count, reward) VALUES (?, ?, ?, ?)"
+        return await this.query(sql, [skill_id, name, questionCount, reward]);
     }
 
     async addQuestion(quizId: string, question: string) {
