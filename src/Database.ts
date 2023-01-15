@@ -75,11 +75,6 @@ export default class Database {
         return await this.query<{ data: string }>(single_sql, [id]);
     }
 
-    async getSkills(id: string) {
-        const skills = `SELECT s.id, s.name, u.points FROM user_skills AS u JOIN skills AS s ON u.skill_id = s.id WHERE u.user_id = ?`
-        return await this.query<{ skills: string }>(skills, [id]);
-    }
-
     async getAchievements(id: string) {
         const achievements = `SELECT a.id, a.name, a.description, a.photo_url FROM user_achievements AS u JOIN achievements AS a ON u.achievement_id = a.id WHERE u.user_id = ?`
         return await this.query<{ achievements: string }>(achievements, [id]);
@@ -145,9 +140,13 @@ export default class Database {
     //#endregion
 
     //#region Points management
-    async getPoints(id: string) {
-        const sql = "SELECT points FROM users WHERE id=?"
-        return await this.query<{ points: number }>(sql, [id]);
+    async getSkills(id: string) {
+        const sql = `
+            SELECT skill_id as id, skills.name as name, sum(points) as points, user_id FROM points_history
+            JOIN skills ON skills.id=points_history.skill_id
+            WHERE user_id=?
+            GROUP BY skill_id`
+        return await this.query<{ id: number, name: string, points: number, user_id: number }>(sql, [id]);
     }
 
     async addPoints(user_id: string, points: number, skill_id: number, activity_id: number, activity_name: string) {
