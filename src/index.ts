@@ -137,6 +137,75 @@ app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) 
     });
 })
 
+app.post("/addQuiz", async (req: Request<{}, {}, { category: number, name: string, questionCount: number, reward: number }>, res) => {
+    const result = await database.addQuiz(req.body.category, req.body.name, req.body.questionCount, req.body.reward)
+    if (result.success === false) {
+        console.log(result)
+        return res.status(400).send({ description: "Error adding the quiz" });
+    }
+
+    return res.status(200).send({ description: "Successfully added a quiz" });
+})
+
+app.post("/addQuestion", async (req: Request<{}, {}, { quizId: string, question: string }>, res) => {
+    const result = await database.addQuestion(req.body.quizId, req.body.question)
+    if (result.success === false) {
+        console.log(result)
+        return res.status(400).send({ description: "Error adding the question" });
+    }
+
+    return res.status(200).send({ description: "Successfully added a question" });
+})
+
+app.post("/addAnswer", async (req: Request<{}, {}, { questionId: number, answer: string, correct: boolean }>, res) => {
+    const result = await database.addAnswer(req.body.questionId, req.body.answer, req.body.correct)
+    if (result.success === false) {
+        console.log(result)
+        return res.status(400).send({ description: "Error adding an answer" });
+    }
+
+    return res.status(200).send({ description: "Successfully added an answer" });
+})
+
+app.get("/getCategories", async (req: Request<{}, {}, {}>, res) => {
+    const result = await database.getAvailableCategories()
+    if (result.success === false || result.data.length === 0) {
+        console.log(result)
+        return res.status(400).send({ description: "Error loading available categories" });
+    }
+
+    return res.status(200).send({
+        description: "Success getting categories",
+        data: result.data
+    });
+})
+
+app.get("/getQuizes", async (req: Request<{}, {}, {}>, res) => {
+    const result = await database.getAvailableQuizes()
+    if (result.success === false || result.data.length === 0) {
+        console.log(result)
+        return res.status(400).send({ description: "Error loading available quizes" });
+    }
+
+    return res.status(200).send({
+        description: "Success getting quizes",
+        data: result.data
+    });
+})
+
+app.get("/getQuestions", async (req: Request<{}, {}, {}>, res) => {
+    const result = await database.getAvailableQuestions()
+    if (result.success === false || result.data.length === 0) {
+        console.log(result)
+        return res.status(400).send({ description: "Error loading available questions" });
+    }
+
+    return res.status(200).send({
+        description: "Success getting questions",
+        data: result.data
+    });
+})
+
 app.get("/", (_, res) => {
     res.send("Hello world!");
 })
