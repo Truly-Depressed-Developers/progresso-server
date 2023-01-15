@@ -8,6 +8,7 @@ const password = "28pTQYMQH9qomf"
 const database = "bitehack2023"
 
 const MAX_LEADERBOARDS_RECORDS = 7
+const MAX_POINTS_HISTORY_RECORDS = 7
 
 export default class Database {
     connection: mysql.Connection
@@ -88,7 +89,8 @@ export default class Database {
         JOIN points_history_activitites as a ON a.id=h.activity_id
         JOIN skills as s ON s.id=h.skill_id
         WHERE u.id=?
-        ORDER BY timestamp DESC`
+        ORDER BY timestamp DESC
+        LIMIT ${MAX_POINTS_HISTORY_RECORDS}`
         type pointsHistoryType = {
             id: number,
             points: number,
