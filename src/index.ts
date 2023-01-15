@@ -7,6 +7,7 @@ import formidable from 'formidable';
 import { v4 as uuidv4 } from 'uuid';
 import sha256, { Hash, HMAC } from "fast-sha256";
 import * as fs from 'fs';
+import { isDeepStrictEqual } from "util";
 var nacl = require('tweetnacl');
 nacl.util = require('tweetnacl-util');
 
@@ -302,15 +303,30 @@ app.get("/allPdfs", async (_, res) => {
     return res.send(files)
 })
 
-app.get("/isAnswerCorrect", async (req: Request<{}, {}, { id: number }>, res) => {
-    if (!req.query.id) {
-        return res.status(400).send({ description: "id jest undefined" });
+app.post("/evaluateQuiz", async (req: Request<{}, {}, { ids: number[] }>, res) => {
+    if (!req.body.ids || req.body.ids.length === 0) {
+        return res.status(400).send({ description: "ids are undefined" });
     }
-    const answer = await database.getAnswer(parseInt(req.query.id as string))
-    if (answer.success === false || answer.data.length !== 1) {
-        return res.status(400).send({ description: "Błąd pobierania odpowiedzi" });
+
+    let correct = false;
+    for (let i = 0; i < req.body.ids.length; i++) {
+        const answer = await database.getAnswer(req.body.ids[i])
+        if (answer.success === false || answer.data.length !== 1) {
+            return res.status(400).send({ description: "Błąd pobierania odpowiedzi" });
+        }
+        if (!answer.data[0].correct) {
+            correct = answer.data[0].correct;
+            break;
+        }
     }
-    return res.send({ correct: answer.data[0].correct })
+
+    let description;
+    correct ? description = "The quiz is all correct!" : description = "The quiz is not correct!"
+
+    return res.send({
+        description: description,
+        correct: correct
+    })
 })
 
 app.listen(3000, () => {
