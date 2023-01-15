@@ -90,7 +90,8 @@ export default class Database {
         SELECT h.id, h.points, a.name as activity_type, h.activity_name, h.timestamp FROM points_history as h
         JOIN users as u ON u.id=h.user_id
         JOIN points_history_activitites as a ON a.id=h.activity_id
-        WHERE u.id=?`
+        WHERE u.id=?
+        ORDER BY timestamp DESC`
         type pointsHistoryType = {
             id: number,
             points: number,
