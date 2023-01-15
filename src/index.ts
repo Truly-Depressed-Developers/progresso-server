@@ -105,10 +105,13 @@ app.post("/getUserData", async (req: Request<{}, {}, { id: string }>, res) => {
 })
 
 app.get("/getUserData", async (req: Request<{}, {}, { username: string }>, res) => {
-    const resultUserId = await database.getUserId(req.body.username)
+    if (typeof req.query.username != "string") {
+        return res.status(400).send({ description: "username musi być stringiem" });
+    }
+    const resultUserId = await database.getUserId(req.query.username)
     if (resultUserId.success === false || resultUserId.data.length !== 1) {
         console.log(resultUserId)
-        return res.status(400).send({ description: "User doesn't exist" });
+        return res.status(400).send({ description: `User ${req.query.username} doesn't exist` });
     }
 
     // Single data
@@ -178,6 +181,13 @@ app.post("/file", (req, res) => {
     });
 })
 
+var extensionToMimeType: { [x: string]: string } = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'pdf': 'application/pdf'
+}
+
 app.get("/file", async (req: Request<{}, {}, { id: string }>, res) => {
     if (typeof req.query.id != "string") {
         return res.status(400).send({ description: "id musi być stringiem" });
@@ -191,8 +201,12 @@ app.get("/file", async (req: Request<{}, {}, { id: string }>, res) => {
     const file = __dirname + '/uploads/' + req.query.id + "." + fileInfo.data[0].extension;
     console.log("zwracam plik " + file)
     var data = fs.readFileSync(file);
-    res.contentType("application/pdf");
-    return res.send(data);
+    if (extensionToMimeType[fileInfo.data[0].extension] == undefined) {
+        return res.status(400).send({ description: `Rozszerzenie ${fileInfo.data[0].extension} nie jest obsługiwane` });
+    } else {
+        res.contentType(extensionToMimeType[fileInfo.data[0].extension]);
+        return res.send(data);
+    }
 })
 
 app.get("/fileDownload", async (req: Request<{}, {}, { id: string }>, res) => {
