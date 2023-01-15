@@ -370,7 +370,7 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[
     let description;
     if (correct) {
         description = `The quiz is all correct! Added ${answerPoints.data[0].reward} points`
-        database.addPoints(req.body.id, answerPoints.data[0].reward, answerPoints.data[0].skill_id, QUIZ_ACTIVITY_ID, answerPoints.data[0].name);
+        addPoints(req.body.id, answerPoints.data[0].reward, answerPoints.data[0].skill_id, QUIZ_ACTIVITY_ID, answerPoints.data[0].name);
     } else {
         description = "The quiz is not correct!"
     }
@@ -380,6 +380,10 @@ app.post("/evaluateQuiz", async (req: Request<{}, {}, { id: string, ids: number[
         correct: correct
     })
 })
+
+function addPoints(user_id: string, points: number, skill_id: number, activity_id: number, activity_name: string) {
+    database.addPoints(user_id, points, skill_id, activity_id, activity_name);
+}
 
 app.get("/getCompleteQuiz", async (req: Request<{}, {}, { id: number }>, res) => {
     if (!req.query.id) {
