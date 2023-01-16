@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 15 Sty 2023, 10:03
+-- Czas generowania: 16 Sty 2023, 15:55
 -- Wersja serwera: 10.4.27-MariaDB
--- Wersja PHP: 8.1.12
+-- Wersja PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -97,16 +97,14 @@ CREATE TABLE `files` (
 --
 
 INSERT INTO `files` (`id`, `extension`, `originalName`, `uploadTimestamp`) VALUES
-('09dc13a6-de13-4bb2-aeaa-495128649691', 'pdf', '(Dolciani Mathematical Expositions) Paul R. Halmos - Linear Algebra Problem Book-The Mathematical Association of America (1995)', '2023-01-14 21:37:39'),
-('19c47060-9415-41a6-b0a4-bb60f9c00b8a', 'pdf', 'Sheldon Axler - Linear Algebra Done Right-Springer (2004)', '2023-01-15 05:36:14'),
 ('1f3a7387-24df-4e0b-80f8-3cc92963c687', 'pdf', 'zestaw06', '2023-01-14 20:57:46'),
 ('20adbeeb-b151-4384-b680-fed06f70ba31', 'png', 'profile', '2023-01-14 21:33:31'),
-('20f059db-9341-4f75-9c88-5a763c86e5c8', 'pdf', 'Sheldon Axler - Linear Algebra Done Right-Springer (2004)', '2023-01-15 05:37:33'),
-('36595cb9-d7b0-4234-8040-3870aa7cd1ce', 'pdf', '(Dolciani Mathematical Expositions) Paul R. Halmos - Linear Algebra Problem Book-The Mathematical Association of America (1995)', '2023-01-15 03:37:29'),
-('60cf5069-54d2-46a7-9757-f5beb01081ef', 'pdf', 'Sheldon Axler - Linear Algebra Done Right-Springer (2004)', '2023-01-15 05:35:49'),
+('4aa56b9c-9658-450a-97c2-d27633ae3605', 'pdf', 'lab1', '2023-01-16 13:47:21'),
+('76d51df6-97ab-4e82-b287-5e63e9294369', 'pdf', 'W02', '2023-01-16 13:46:22'),
 ('897103e0-ad37-434b-b7da-c4bbdc8bb54e', 'pdf', 'W01', '2023-01-14 21:01:20'),
 ('9aec559b-11c0-4f19-b0f9-2bbe8ff83bca', 'jpg', 'default-profile-picture', '2023-01-15 07:41:46'),
 ('cb39a399-c3ba-4426-bb5d-81591f5c7da8', 'pdf', '_wiczenia_6 (1)', '2023-01-15 06:29:59'),
+('d965da9b-eb98-4fd6-ac2a-d2f47c8dced7', 'pdf', 'W03', '2023-01-16 13:46:30'),
 ('f1f69718-8071-4aa4-92c4-71f69855208d', 'pdf', 'BITEhack_2023_-_Zadanie_Kategoria_AI', '2023-01-14 17:35:20');
 
 -- --------------------------------------------------------
@@ -526,7 +524,7 @@ COMMIT;
 
 
 -- create user
-CREATE USER 'bitehack2023'@'%' IDENTIFIED VIA mysql_native_password USING '***';GRANT USAGE ON *.* TO 'bitehack2023'@'%' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
+CREATE USER bitehack2023 IDENTIFIED BY '28pTQYMQH9qomf';
 
 -- set user privileges
-GRANT ALL PRIVILEGES ON bitehack2023. * TO 'bitehack2023'
+GRANT ALL PRIVILEGES ON bitehack2023. * TO 'bitehack2023';

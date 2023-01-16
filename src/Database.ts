@@ -2,7 +2,7 @@ import mysql from "mysql"
 
 export type QueryResult<T> = { success: false, error: string | undefined } | { success: true, data: T[] };
 
-const host = "10.230.17.186"
+const host = "localhost"
 const user = "bitehack2023"
 const password = "28pTQYMQH9qomf"
 const database = "bitehack2023"
