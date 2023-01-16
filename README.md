@@ -1,7 +1,7 @@
 
 # BITEhack 2023 server
 
-Server for an app created at BITEhack Hackathon 2022
+Server for an app created at [BITEhack Hackathon](https://bitehack.best.krakow.pl/) (5th edition, 2023)
 
 This repository is only for server. If you are looking for a client app, see the main repository at [Truly-Depressed-Developers/bitehack2023-client](https://github.com/Truly-Depressed-Developers/bitehack2023-client)
 
@@ -15,6 +15,7 @@ This repository is only for server. If you are looking for a client app, see the
 
 <img src="https://img.shields.io/badge/Node.js-339933?logo=Node.js&logoColor=white&style=for-the-badge"/>
 <img src="https://img.shields.io/badge/Express-000000?logo=Express&logoColor=white&style=for-the-badge"/>
+<img src="https://img.shields.io/badge/MySQL-4479A1?logo=MySQL&logoColor=white&style=for-the-badge"/>
 <img src="https://img.shields.io/badge/Typescript-3178C6?logo=TypeScript&logoColor=white&style=for-the-badge"/>
 
 ## Installation
@@ -34,7 +35,7 @@ This repository is only for server. If you are looking for a client app, see the
 Clone this repo on your local machine
 ```
 git clone https://github.com/Truly-Depressed-Developers/bitehack2023-server.git
-cd sheepyourhack4-server
+cd bitehack2023-server
 ```
 
 Install node modules

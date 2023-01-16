@@ -11,13 +11,18 @@ function transpileTS() {
         .pipe(dest("build"))
 }
 
-function transpileData() {
-    return src("src/data/**/*.json", { since: lastRun(transpileData) })
+function copyData() {
+    return src("src/data/**/*.json", { since: lastRun(copyData) })
         .pipe(dest("build/data"))
 }
 
-function transpile(cb) {
-    series(transpileTS, transpileData)(() => { cb() })
+function copyPublic() {
+    return src("public/**/*", { since: lastRun(copyPublic) })
+        .pipe(dest("build/public"));
+}
+
+function build(cb) {
+    series(transpileTS, copyData, copyPublic)(() => { cb() })
 }
 
 /**
@@ -55,12 +60,13 @@ function killServer(cb) {
 }
 
 const dev = () => {
-    series(transpile, runServer)(() => { });
+    series(build, runServer)(() => { });
 
     watch("src/**/*.ts", series(killServer, transpileTS, runServer));
-    watch("src/data/**/*.json", series(killServer, transpileData, runServer));
+    watch("src/data/**/*.json", series(killServer, copyData, runServer));
+    watch("public/**/*", series(killServer, copyPublic, runServer));
 };
 
 exports.start = exports.default = (cb) => runServer(cb, false);
-exports.build = transpile;
+exports.build = build;
 exports.dev = dev;

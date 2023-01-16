@@ -21,7 +21,7 @@ app.use(cors({
     origin: "*",
     credentials: true,
 }))
-app.use("/static", Express.static('public'));
+app.use("/static", Express.static(path.join(__dirname, 'public')));
 
 const database = new Database();
 
