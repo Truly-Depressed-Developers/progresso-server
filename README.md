@@ -1,9 +1,7 @@
 
-# BITEhack 2023 server
+# Progresso - server
 
-Server for an app created at [BITEhack Hackathon](https://bitehack.best.krakow.pl/) (5th edition, 2023)
-
-This repository is only for server. If you are looking for a client app, see the main repository at [Truly-Depressed-Developers/bitehack2023-client](https://github.com/Truly-Depressed-Developers/bitehack2023-client)
+This repository only contains the server's code. For the main repository, see [Truly-Depressed-Developers/progresso](https://github.com/Truly-Depressed-Developers/progresso)
 
 ## Features
 
@@ -439,16 +437,7 @@ npm run dev
         </td>
     </tr>
 </table>
-					
-## Authors
-
-- [@rjodlowski](https://github.com/rjodlowski)
-- [@rubikon02](https://github.com/rubikon02)
 
 ## License
 
 This project is licensed under [MIT](./LICENSE) license.
-
-## Acknowledgements
-
- - [BEST AGH Kraków](http://www.best.krakow.pl/) for organizing the whole event and heartwarming welcome
